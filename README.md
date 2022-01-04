@@ -6,6 +6,8 @@ A Flutter Plugin for [Google One Tap Sign In](https://developers.google.com/iden
 
 ## Getting Started
 
+To access Google Sign-In, you'll need to make sure to [register your application](https://firebase.google.com/docs/android/setup).
+
 * Add to your pubspec.yaml
   ```
   dependencies:  
