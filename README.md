@@ -34,7 +34,7 @@ To access Google Sign-In, you'll need to make sure to [register your application
         print("ID : ${data.id ?? "-"}");
       }
   }
-```
+  ```
 
 ## Example
 Find the example wiring in the [Google One Tap Sign In](https://github.com/daewu14/google_one_tap_sign_in/blob/master/example/lib/main.dart)
