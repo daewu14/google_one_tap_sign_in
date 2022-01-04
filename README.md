@@ -1,4 +1,4 @@
-![Tux, the Linux mascot](/assets/img.png)
+[Screenshoot](https://raw.githubusercontent.com/daewu14/google_one_tap_sign_in/master/assets/img.png)
 
 
 # Google One Tap Sign In
