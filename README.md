@@ -1,3 +1,6 @@
+![Tux, the Linux mascot](/assets/img.png)
+
+
 # Google One Tap Sign In
 
 Google One Tap Sign In (Android)
