@@ -128,11 +128,20 @@ class GoogleOneTapSignInPlugin: FlutterPlugin, MethodCallHandler, MethodContract
           null, 0, 0, 0, null)
       }
       .addOnFailureListener { e ->
-        e.message?.let { Log.d("Error", it) }
-        result!!.success(null)
+        e.message?.let {
+          Log.d("Error", it)
+          if (it.contains("Caller has been temporarily blocked due to too many canceled sign-in prompts.")) {
+            result!!.success("TEMPORARY_BLOCKED")
+          } else {
+            result!!.success(null)
+          }
+        }
+        if (e.message == null) {
+          result!!.success(null)
+        }
       }
       .addOnCanceledListener {
-        result!!.success(null)
+        result!!.success("CANCELED")
       }
 
   }

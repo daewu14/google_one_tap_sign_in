@@ -21,7 +21,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
 
   // Your Web Client Id
-  final String _webClientId = "[YOUR-WEB-CLIENT-ID]";
+  //final String _webClientId = "[YOUR-WEB-CLIENT-ID]";
+  final String _webClientId = "844969620051-tes5kf8ifuiq2vhvdrkulusn3uu5a9lq.apps.googleusercontent.com";
 
   File? _image;
 
@@ -31,13 +32,37 @@ class _MyAppState extends State<MyApp> {
     print("INIT STATE");
   }
 
-  /// On Sign In
   void _onSignIn() async {
     var data = await GoogleOneTapSignIn.startSignIn(webClientId: _webClientId);
     if (data != null) {
       /// Whatever you do with [SignInResult] data
       print("Id Token : ${data.idToken ?? "-"}");
       print("ID : ${data.id ?? "-"}");
+    }
+  }
+
+  void _onSignInWithHandle() async {
+    var result = await GoogleOneTapSignIn.handleSignIn(webClientId: _webClientId);
+
+    if (result.isTemporaryBlock) {
+      // TODO: Tell your users about this status
+      print("Temporary BLOCK");
+    }
+
+    if (result.isCanceled) {
+      // TODO: Tell your users about this status
+      print("Canceled");
+    }
+
+    if (result.isFail) {
+      // TODO: Tell your users about this status
+    }
+
+    if (result.isOk) {
+      // TODO: Whatever you do with [SignInResult] data
+      print("OK");
+      print("Id Token : ${result.data?.idToken ?? "-"}");
+      print("Email : ${result.data?.username ?? "-"}");
     }
   }
 
@@ -55,6 +80,10 @@ class _MyAppState extends State<MyApp> {
               TextButton(
                 child: const Text("Sign In"),
                 onPressed: () => _onSignIn(),
+              ),
+              TextButton(
+                child: const Text("Sign In With Handle"),
+                onPressed: () => _onSignInWithHandle(),
               ),
             ],
           ),
