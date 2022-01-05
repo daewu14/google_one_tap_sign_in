@@ -21,8 +21,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
 
   // Your Web Client Id
-  //final String _webClientId = "[YOUR-WEB-CLIENT-ID]";
-  final String _webClientId = "844969620051-tes5kf8ifuiq2vhvdrkulusn3uu5a9lq.apps.googleusercontent.com";
+  final String _webClientId = "[YOUR-WEB-CLIENT-ID]";
 
   File? _image;
 
