@@ -3,16 +3,14 @@ package id.daewu14.google_one_tap_sign_in
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.IntentSender
 import android.util.Log
 import androidx.annotation.NonNull
-import androidx.core.app.ActivityCompat.startIntentSenderForResult
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
@@ -20,7 +18,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
-import java.util.*
 
 /**
  * GoogleOneTapSignInPlugin
@@ -44,23 +41,30 @@ class GoogleOneTapSignInPlugin: FlutterPlugin, MethodCallHandler, MethodContract
 
   private lateinit var oneTapClient: SignInClient
   private lateinit var signInRequest: BeginSignInRequest
-  private lateinit var activity: Activity
-  private lateinit var context: Context
+  private lateinit var pluginBinding: FlutterPluginBinding
+
+  private var activity: Activity? = null
+  private var context: Context? = null
   private var webCLientId: String? = null
-  private lateinit var result: MethodChannel.Result
+  private var result: MethodChannel.Result? = null
+
+  /**
+   * Get binding to controll all the activity of Flutter App from Flutter Engine
+   */
+  private var binding: ActivityPluginBinding? = null
 
 
   private var DAEWU: String = "---DAEWU14---"
+  private var channelName: String = "google_one_tap_sign_in"
 
-  private val REQ_ONE_TAP = 2  // Can be any integer unique to the Activity
-  private var showOneTapUI = true
+  /**
+   * Unique [REQUEST_CODE]
+   */
+  private val REQ_ONE_TAP = 14081996
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "google_one_tap_sign_in")
-    context = flutterPluginBinding.applicationContext
-    channel.setMethodCallHandler(this)
+    setupPlugin(null, flutterPluginBinding)
   }
-
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     this.result = result
@@ -79,11 +83,20 @@ class GoogleOneTapSignInPlugin: FlutterPlugin, MethodCallHandler, MethodContract
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    detachPlugin()
     channel.setMethodCallHandler(null)
   }
 
   override fun startSignIn() {
     if (webCLientId == null) {
+      return
+    }
+
+    if (result == null) {
+      return
+    }
+
+    if (activity == null) {
       return
     }
 
@@ -110,60 +123,108 @@ class GoogleOneTapSignInPlugin: FlutterPlugin, MethodCallHandler, MethodContract
     oneTapClient.beginSignIn(signInRequest)
       .addOnSuccessListener { rss ->
         Log.d("ON LOGIN","PROCESS")
-        activity.startIntentSenderForResult(
+        activity!!.startIntentSenderForResult(
           rss.pendingIntent.intentSender, REQ_ONE_TAP,
           null, 0, 0, 0, null)
       }
       .addOnFailureListener { e ->
         e.message?.let { Log.d("Error", it) }
-        result.success(null)
+        result!!.success(null)
       }
       .addOnCanceledListener {
-        result.success(null)
+        result!!.success(null)
       }
 
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-    when {
-      requestCode == REQ_ONE_TAP -> {
-        if (data != null) {
-          try {
-            val credential = oneTapClient.getSignInCredentialFromIntent(data)
-            val idToken = credential.googleIdToken
-            val username = credential.id
-            val password = credential.password
-            val displayName = credential.displayName
-            val googleIdToken = credential.googleIdToken
-            val id = credential.id
-            result.success("{\"credential\":\"$credential\", \"id_token\":\"$idToken\",\"username\":\"$username\",\"password\":\"$password\",\"display_name\":\"$displayName\",\"google_id_token\":\"$googleIdToken\",\"id\":\"$id\"}")
+    if (binding == null) {
+      return false
+    }
+    Log.d(DAEWU, "Req Code : $requestCode")
+    result?.let {
+      when {
+        requestCode == REQ_ONE_TAP -> {
+          if (data != null) {
+            try {
+              val credential = oneTapClient.getSignInCredentialFromIntent(data)
+              val idToken = credential.googleIdToken
+              val username = credential.id
+              val password = credential.password
+              val displayName = credential.displayName
+              val googleIdToken = credential.googleIdToken
+              val id = credential.id
+              Log.d(DAEWU, "~~~~ ☕ ONE TAP SUCCESS ☕ ~~~~")
+              it.success("{\"credential\":\"$credential\", \"id_token\":\"$idToken\",\"username\":\"$username\",\"password\":\"$password\",\"display_name\":\"$displayName\",\"google_id_token\":\"$googleIdToken\",\"id\":\"$id\"}")
+              return true
+            } catch (e: ApiException) {
+              Log.d(DAEWU, "~~~~ !! ONE TAP ApiException !! ~~~~")
+              it.success(null)
+              return false
+            }
+          } else {
+            Log.d(DAEWU, "~~~~ !! ONE TAP Data Null !! ~~~~")
+            it.success(null)
             return true
-          } catch (e: ApiException) {
-            result.success(null)
-            return false
           }
-        } else {
-          result.success(null)
-          return true
+        }
+        else -> {
+          return false
         }
       }
-      else -> {
-        result.success(null)
-        return false
-      }
     }
+    Log.d(DAEWU, "~~~~ !! ONE TAP Result Unknown !! ~~~~")
+    return false
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-    activity = binding.activity
-    binding.addActivityResultListener(this)
+    setupPlugin(binding, null)
   }
 
-  override fun onDetachedFromActivityForConfigChanges() {}
+  override fun onDetachedFromActivityForConfigChanges() {
+    detachPlugin()
+  }
 
-  override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {}
+  override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+    onAttachedToActivity(binding)
+  }
 
   override fun onDetachedFromActivity() {}
 
+  /**
+   * To Detach this Plugin
+   */
+  private fun detachPlugin() {
+    if (binding == null) {
+      return
+    }
+    this.binding!!.removeActivityResultListener(this)
+    this.binding = null
+  }
+
+  /**
+   * Setup this Plugin
+   */
+  private fun setupPlugin(binding: ActivityPluginBinding?, flutterPluginBinding: FlutterPlugin.FlutterPluginBinding?) {
+
+    // let Binding the FlutterPluginBinding
+    flutterPluginBinding?.let {
+      pluginBinding = it
+    }
+
+    // Let Plugin Binding
+    pluginBinding.let {
+      context = it.applicationContext
+      channel = MethodChannel(it.binaryMessenger, channelName)
+      channel.setMethodCallHandler(this)
+    }
+
+    // Let Binding the ActivityPluginBinding
+    binding?.let {
+      activity = it.activity
+      this.binding = it
+      this.binding!!.addActivityResultListener(this)
+    }
+  }
 
 }

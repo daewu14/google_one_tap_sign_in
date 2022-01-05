@@ -9,7 +9,15 @@ void main() {
 
   setUp(() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '42';
+      return SignInResult(
+        idToken: "XXXXXXXXX",
+        credential: "XXXXXXXXX",
+        displayName: "XXXXXXXXX",
+        googleIdToken: "XXXXXXXXX",
+        id: "XXXXXXXXX",
+        password: "XXXXXXXXX",
+        username: "XXXXXXXXX",
+      );
     });
   });
 
@@ -17,7 +25,15 @@ void main() {
     channel.setMockMethodCallHandler(null);
   });
 
-  test('getPlatformVersion', () async {
-    expect(await GoogleOneTapSignIn.platformVersion, '42');
+  test('startSignIn', () async {
+    expect(await GoogleOneTapSignIn.startSignIn(webClientId: "XXXXX"), SignInResult(
+      idToken: "XXXXXXXXX",
+      credential: "XXXXXXXXX",
+      displayName: "XXXXXXXXX",
+      googleIdToken: "XXXXXXXXX",
+      id: "XXXXXXXXX",
+      password: "XXXXXXXXX",
+      username: "XXXXXXXXX",
+    ));
   });
 }

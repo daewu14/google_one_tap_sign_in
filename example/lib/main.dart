@@ -2,6 +2,8 @@
 /// Tuesday, 04/01/22 18:29
 /// Enjoy coding ☕
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_one_tap_sign_in/google_one_tap_sign_in.dart';
 
@@ -19,7 +21,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
 
   // Your Web Client Id
-  final String _webClientId = "[XXXXXXXXXXX]";
+  final String _webClientId = "[YOUR-WEB-CLIENT-ID]";
+
+  File? _image;
 
   @override
   void initState() {
@@ -45,9 +49,14 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Google One Tap Sign In'),
         ),
         body: Center(
-          child: TextButton(
-            child: const Text("Sign In"),
-            onPressed: () => _onSignIn(),
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              TextButton(
+                child: const Text("Sign In"),
+                onPressed: () => _onSignIn(),
+              ),
+            ],
           ),
         ),
       ),
