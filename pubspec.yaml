@@ -2,7 +2,7 @@ name: google_one_tap_sign_in
 description: Google One Tap Sign In (Android)
 authors:
   - Daewu (daewu.bintara1996@gmail.com)
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/daewu14/google_one_tap_sign_in
 
 environment:
