@@ -25,7 +25,7 @@ To access Google Sign-In, you'll need to make sure to [register your application
   ```
   import 'package:google_one_tap_sign_in/google_one_tap_sign_in.dart';
   ```
-* Handle Method
+* Handle Simple Method
   ```
   // Your Web Client Id  
   final String _webClientId = "[XXXXXXXXXXX]";
@@ -35,6 +35,35 @@ To access Google Sign-In, you'll need to make sure to [register your application
         // Whatever you do with [SignInResult] data
         print("Id Token : ${data.idToken ?? "-"}");
         print("ID : ${data.id ?? "-"}");
+      }
+  }
+  ```
+* Handle with Condition Method
+  ```
+  // Your Web Client Id  
+  final String _webClientId = "[XXXXXXXXXXX]";
+  void _onSignInWithHandle() async {
+  var result = await GoogleOneTapSignIn.handleSignIn(webClientId: _webClientId);
+  
+      if (result.isTemporaryBlock) {
+        // TODO: Tell your users about this status
+        print("Temporary BLOCK");
+      }
+  
+      if (result.isCanceled) {
+        // TODO: Tell your users about this status
+        print("Canceled");
+      }
+  
+      if (result.isFail) {
+        // TODO: Tell your users about this status
+      }
+  
+      if (result.isOk) {
+        // TODO: Whatever you do with [SignInResult] data
+        print("OK");
+        print("Id Token : ${result.data?.idToken ?? "-"}");
+        print("Email : ${result.data?.username ?? "-"}");
       }
   }
   ```

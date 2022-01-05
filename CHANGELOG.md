@@ -1,5 +1,9 @@
 ## 1.0.0
 
+* Update README.md
+
+## 1.0.0
+
 * Add new features 'GoogleOneTapSignIn.handleSignIn(webClientId: "[YOUR-CLIENT-ID]")'
     ```
       void _onSignInWithHandle() async {
