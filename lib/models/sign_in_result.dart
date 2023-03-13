@@ -40,6 +40,29 @@ class SignInResult {
     googleIdToken: json["google_id_token"] == null ? null : json["google_id_token"],
     id: json["id"] == null ? null : json["id"],
   );
+
+  ///
+  /// To Json method to use in stringify
+  ///
+  Map<String, dynamic> toJson(){
+    return {
+      "credential": credential,
+      "username": username,
+      "password": password,
+      "id_token": idToken,
+      "display_name": displayName,
+      "google_id_token": googleIdToken,
+      "id": id
+    }
+  }
+  
+  ///
+  /// To String method to print
+  /// 
+  @override
+  String toString(){
+    return toJson().toString();
+  }
 }
 
 ///
