@@ -53,7 +53,7 @@ class SignInResult {
       "display_name": displayName,
       "google_id_token": googleIdToken,
       "id": id
-    }
+    };
   }
   
   ///
