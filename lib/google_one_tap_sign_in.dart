@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:ffi';
 
 import 'package:flutter/services.dart';
+import 'package:google_one_tap_sign_in/exception.dart';
+import 'package:google_one_tap_sign_in/platform_support.dart';
 
 part 'models/sign_in_result.dart';
 
@@ -47,6 +47,12 @@ class GoogleOneTapSignIn {
   ///
   static Future<SignInResult?> startSignIn(
       {required String webClientId}) async {
+
+    // check support platform
+    if (!GoogleOneTapSignInPlatformSupport.checkPlatformSupport()) {
+      throw GoogleOneTapSignInException("Unsupported for this platform, for now support on : "+GoogleOneTapSignInPlatformSupport.platformSupport().join(","));
+    }
+
     var data = await _channel
         .invokeMethod('startSignIn', {"web_client_id": webClientId});
     if (data == null) return null;
@@ -99,6 +105,11 @@ class GoogleOneTapSignIn {
   /// ```
   ///
   static Future<SignInData> handleSignIn({required String webClientId}) async {
+    // check support platform
+    if (!GoogleOneTapSignInPlatformSupport.checkPlatformSupport()) {
+      throw GoogleOneTapSignInException("Unsupported for this platform, for now support on : "+GoogleOneTapSignInPlatformSupport.platformSupport().join(","));
+    }
+
     var signInData = SignInData();
     var data = await _channel
         .invokeMethod('startSignIn', {"web_client_id": webClientId});
