@@ -1,3 +1,9 @@
+## 1.0.7
+
+* Maintenance & Fixing
+  * Update Kotlin and Android Gradle version
+  * add exception, handle support platform
+
 ## 1.0.3
 
 * Update Example
