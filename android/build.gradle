@@ -25,6 +25,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace = "id.daewu14.google_one_tap_sign_in"
     compileSdkVersion 30
 
     compileOptions {
